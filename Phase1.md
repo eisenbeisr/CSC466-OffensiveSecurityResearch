@@ -51,7 +51,7 @@ Framework` to exploit the vulnerabilities.
   + **8 GB Memory**
   + **4 CPUs**
   + **Create a Virtual Hard Disk with 80 GB of storage**
-- - Install the `Kali Linux` iso image onto the newly created VM instance
+- Install the `Kali Linux` iso image onto the newly created VM instance
 - Start the `Kali Linux VM`
 - Select "Graphical Install" on the boot up menu
 - Choose basic machine preferences
