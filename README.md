@@ -171,7 +171,7 @@ effective fileless attack on our Windows 10 VM.**
 -  Our objective here is to create a functional Python script to automate port scanning and vulnerability exploitation
 - We will be using `Python3` for this phase of our research
 
-**Our `Custom Python Script` can be found here:** https://github.com/eisenbeisr/CSC466-OffensiveSecurityResearch
+**Our `Custom Python Script` can be found here:** https://github.com/eisenbeisr/CSC466-OffensiveSecurityResearch/blob/master/script.py
 
 
 ---
