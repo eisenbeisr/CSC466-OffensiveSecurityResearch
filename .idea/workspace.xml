@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2950e587-2453-4c25-9f6b-cb8291361ee9" name="Changes" comment="Updated README.md, added images directory, added script.py" />
+    <list default="true" id="2950e587-2453-4c25-9f6b-cb8291361ee9" name="Changes" comment="Updated README.md, added images directory, added script.py">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,7 +72,9 @@
       <workItem from="1726974226063" duration="722000" />
       <workItem from="1729711284386" duration="1312000" />
       <workItem from="1730309718657" duration="2484000" />
-      <workItem from="1730390874440" duration="6201000" />
+      <workItem from="1730390874440" duration="7110000" />
+      <workItem from="1731272705253" duration="600000" />
+      <workItem from="1732114381761" duration="4713000" />
     </task>
     <task id="LOCAL-00001" summary="Phase 1 Objectives">
       <option name="closed" value="true" />
@@ -119,7 +124,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730397066349</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Updated README.md, added images directory, added script.py">
+      <option name="closed" value="true" />
+      <created>1730397385343</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1730397385343</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

